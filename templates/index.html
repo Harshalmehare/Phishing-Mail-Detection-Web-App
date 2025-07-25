@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Email Detector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .email-input {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .email-input:focus {
+            box-shadow: 0 4px 25px rgba(0,0,0,0.12);
+        }
+        .security-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .result-card {
+            transition: all 0.5s ease;
+            transform-origin: top;
+        }
+        .result-card.show {
+            transform: scaleY(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <div class="flex justify-center mb-6">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/505bce28-25a6-4782-9091-6b27fe629004.png" alt="Shield icon with blue gradient background representing email security" class="w-24 h-24 rounded-full border-4 border-white shadow-lg" />
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-4">Phishing Email Detector</h1>
+                <p class="text-xl text-white opacity-80">Analyze suspicious emails for potential phishing attempts</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+                <div class="p-8">
+                    <form id="emailForm">
+                        <div class="mb-6">
+                            <label for="emailText" class="block text-gray-700 font-medium mb-2">Email Content</label>
+                            <textarea id="emailText" name="email_text" rows="12" class="email-input w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 transition duration-200" placeholder="Paste the email content you want to analyze here..."></textarea>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-center justify-between">
+                            <div class="mb-4 sm:mb-0">
+                                <button type="button" id="analyzeBtn" class="security-pulse bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                                    <i class="fas fa-shield-alt mr-2"></i> Analyze Email
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                <i class="fas fa-lock mr-1"></i> Your analysis is secure and private
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="resultSection" class="result-card transform scale-y-0 opacity-0 origin-top transition-all duration-300 bg-gray-50 border-t border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Analysis Results</h2>
+                    <div id="resultContent" class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/3">
+                            <div class="bg-white rounded-lg shadow p-4 h-full">
+                                <h3 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                    <i class="fas fa-chart-pie mr-2 text-blue-500"></i> Risk Assessment
+                                </h3>
+                                <div class="flex justify-center mb-4">
+                                    <div id="riskMeter" class="w-32 h-32 flex items-center justify-center rounded-full border-8 border-gray-200">
+                                        <span class="text-3xl font-bold">-</span>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p id="riskLevel" class="text-xl font-semibold">Not Analyzed</p>
+                                    <p id="riskDescription" class="text-gray-600 text-sm">Submit an email for analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="md:w-2/3">
+                            <div class="bg-white rounded-lg shadow p-4 h-full">
+                                <h3 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                    <i class="fas fa-search mr-2 text-green-500"></i> Detailed Findings
+                                </h3>
+                                <div id="detailedResults" class="space-y-4">
+                                    <div class="alert-placeholder p-4 rounded-lg bg-blue-50 border border-blue-100">
+                                        <p class="text-blue-800">No results yet. Analyzing an email will display detailed security findings here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center text-white opacity-80 text-sm">
+                <p>This tool helps identify potential phishing attempts but should not be your only security measure.</p>
+                <p class="mt-2">Always verify suspicious emails through other channels.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('analyzeBtn').addEventListener('click', function() {
+            const emailText = document.getElementById('emailText').value.trim();
+            
+            if (!emailText) {
+                alert('Please enter email content to analyze');
+                return;
+            }
+
+            // Simulate analysis (in a real app, this would be an API call)
+            simulateAnalysis(emailText);
+        });
+
+        function simulateAnalysis(emailText) {
+            // Show loading state
+            const btn = document.getElementById('analyzeBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
+            btn.classList.remove('security-pulse');
+
+            // Simulate API delay
+            setTimeout(() => {
+                // Random result for demo (real app would use actual detection logic)
+                const isPhishing = Math.random() > 0.5;
+                displayResults(isPhishing, emailText);
+                
+                // Reset button
+                btn.innerHTML = originalText;
+                btn.classList.add('security-pulse');
+            }, 1500);
+        }
+
+        function displayResults(isPhishing, emailText) {
+            const resultSection = document.getElementById('resultSection');
+            const riskMeter = document.getElementById('riskMeter');
+            const riskLevel = document.getElementById('riskLevel');
+            const riskDescription = document.getElementById('riskDescription');
+            const detailedResults = document.getElementById('detailedResults');
+            
+            // Show result section
+            resultSection.classList.add('show');
+
+            if (isPhishing) {
+                // High risk result
+                riskMeter.innerHTML = '<span class="text-4xl font-bold text-red-600">!</span>';
+                riskMeter.classList.add('border-red-500');
+                riskMeter.classList.remove('border-green-500', 'border-yellow-400');
+                riskLevel.textContent = 'High Risk';
+                riskLevel.className = 'text-xl font-semibold text-red-600';
+                riskDescription.textContent = 'This email shows strong signs of being a phishing attempt';
+                
+                detailedResults.innerHTML = `
+                    <div class="p-4 rounded-lg bg-red-50 border border-red-200">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-red-800 mb-2">Phishing Detected</h4>
+                                <p class="text-red-700 text-sm">Our analysis found multiple indicators that this is a phishing attempt:</p>
+                                <ul class="list-disc list-inside text-red-700 text-sm mt-2 space-y-1">
+                                    <li>Suspicious sender address</li>
+                                    <li>Urgent action requests</li>
+                                    <li>Mismatched links</li>
+                                    <li>Poor grammar/spelling</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                        <div class="flex items-start">
+                            <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-yellow-800 mb-2">Recommended Actions</h4>
+                                <ul class="list-disc list-inside text-yellow-700 text-sm mt-2 space-y-1">
+                                    <li>Do not click any links</li>
+                                    <li>Do not reply with personal information</li>
+                                    <li>Report to your IT security team</li>
+                                    <li>Delete the email</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Low risk result
+                riskMeter.innerHTML = '<span class="text-4xl font-bold text-green-600">✓</span>';
+                riskMeter.classList.add('border-green-500');
+                riskMeter.classList.remove('border-red-500', 'border-yellow-400');
+                riskLevel.textContent = 'Low Risk';
+                riskLevel.className = 'text-xl font-semibold text-green-600';
+                riskDescription.textContent = 'No obvious phishing indicators detected';
+                
+                detailedResults.innerHTML = `
+                    <div class="p-4 rounded-lg bg-green-50 border border-green-200">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-green-800 mb-2">No Phishing Detected</h4>
+                                <p class="text-green-700 text-sm">Our analysis didn't find clear signs of phishing in this email.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 mb-2">Security Tips</h4>
+                                <ul class="list-disc list-inside text-blue-700 text-sm mt-2 space-y-1">
+                                    <li>Still verify sender authenticity if unsure</li>
+                                    <li>Hover over links before clicking</li>
+                                    <li>Look for SSL indicators in websites</li>
+                                    <li>Be cautious with attachments</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
